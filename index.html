@@ -61,7 +61,6 @@
   .mdl{font-size:12.5px;font-weight:700;color:#1d5e9e;margin-bottom:2px;}
   .mdv{font-size:14px;font-weight:600;color:var(--ink);}
   .mfoot{padding:8px 13px;font-size:12px;color:var(--mut);font-style:italic;}
-  .refcode{font:700 22px/1.2 ui-monospace,Menlo,monospace;letter-spacing:2px;background:#f3f6f9;border:1.5px dashed #b9c4cf;border-radius:10px;padding:12px;text-align:center;margin:8px 0;}
 </style>
 </head>
 <body>
@@ -161,7 +160,8 @@ var T={
   end_t:{en:"Done — thank you",hi:"पूरा हुआ — धन्यवाद"},
   end_b:{en:"Your judgement as someone who works with block reports is exactly what this exercise needed.",hi:"Block report के साथ काम करने वाले लोगों की राय ही इस exercise के लिए सबसे ज़रूरी थी।"},
   end_debrief:{en:"This was a research exercise on how block reports are read. The figures were synthetic — nothing you tapped is reported against any person, block, or facility.",hi:"यह एक research exercise थी — कि block report कैसे पढ़ी जाती है। सारे number बनाए हुए थे, असली नहीं — आपके जवाब किसी व्यक्ति, block या facility के ख़िलाफ़ नहीं जाएँगे।"},
-  ref_label:{en:"Your reference code (to remove your responses later):",hi:"आपका reference code (बाद में जवाब हटवाने के लिए):"},
+  ref_pre:{en:"To remove your responses later, quote code ",hi:"बाद में जवाब हटवाने हों तो code "},
+  ref_post:{en:" to bkyadav@tattvafoundation.org",hi:" bkyadav@tattvafoundation.org को बताएं"},
   share:{en:"Share with colleagues who review reports",hi:"उन साथियों को भेजें जो report देखते हैं"},
   shared:{en:"Link copied",hi:"Link copy हो गया"},
   already_t:{en:"Already completed — thank you",hi:"पहले ही पूरा हो चुका है — धन्यवाद"},
@@ -313,7 +313,8 @@ function render(){
   document.getElementById('langbtn').textContent=(L==='en'?'हिंदी':'English');
   var s=state?state.step:'welcome';
   document.getElementById('dummy').textContent=(s==='welcome'||preview)?S('syn_full'):S('syn_short');
-  if(preview){ if(preview==='warmup') return scrWarmup();
+  if(preview){ if(preview==='end') return endCommon('end_t','end_b',{pid:'preview0nly1'});
+    if(preview==='warmup') return scrWarmup();
     if(preview==='message'){ dev.g='x'; return scrMessage(); }
     if(preview==='task'){ dev.g='x'; return scrTask(0); }
     if(preview==='cmessage'){ dev.g='y'; return scrMessage(); }
@@ -589,17 +590,19 @@ function researchFold(row){
 }
 function endCommon(titleKey,bodyKey,row){
   var body=el('div',{class:'app'}, el('h2',{text:S(titleKey)}), el('p',{class:'mut',text:S(bodyKey)}),
-    el('p',{class:'mut sm',text:S('end_debrief')}),
-    el('p',{class:'sm',style:'margin-top:14px;font-weight:600',text:S('ref_label')}),
-    el('div',{class:'refcode',text:(row&&row.pid?row.pid.slice(-6).toUpperCase():'------')}));
+    el('p',{class:'mut sm',text:S('end_debrief')}));
   var pending=(lsGet(K_OUT)||[]).length;
   if(ENDPOINT&&pending>0) body.appendChild(el('p',{class:'xs mut',text:S('sendfail')}));
-  var sh=el('button',{class:'btn sec',onclick:function(){
+  var sh=el('button',{class:'btn',style:'margin-top:18px',onclick:function(){
     var url=CANON_URL||location.href.split('?')[0];
     if(navigator.share){ try{ navigator.share({title:S('brand'),url:url}); return; }catch(e){} }
     try{ navigator.clipboard.writeText(url); sh.textContent=S('shared'); }catch(e){} }},S('share'));
   body.appendChild(sh);
-  body.appendChild(researchFold(row||{}));
+  var code=(row&&row.pid?row.pid.slice(-6).toUpperCase():'------');
+  body.appendChild(el('p',{class:'xs mut',style:'margin-top:12px'}, S('ref_pre'), el('b',{text:code}), S('ref_post')));
+  /* manual-export fold appears only when genuinely needed: no sink configured,
+     unsent rows stuck in the outbox, or a team debug session */
+  if(!ENDPOINT||pending>0||dbgOK) body.appendChild(researchFold(row||{}));
   mountBF(body,null);
 }
 function scrEnd(){ endCommon('end_t','end_b',lsGet(K_DONE)||{pid:state.pid}); }
@@ -621,7 +624,8 @@ document.getElementById('langbtn').addEventListener('click',function(){
   if(dbgOK){ am=(qs.match(/[?&]arm=(dtsa|control)/)||[])[1]||null;
     ord=(qs.match(/[?&]ord=(AB|BA)/)||[])[1]||null;
     if(qs.indexOf('hl=hi')>=0) L='hi';                 /* team-only: preview in Hindi */
-    if(qs.indexOf('pv=warmup')>=0) preview='warmup';
+    if(qs.indexOf('pv=end')>=0) preview='end';
+    else if(qs.indexOf('pv=warmup')>=0) preview='warmup';
     else if(qs.indexOf('pv=cmessage')>=0) preview='cmessage'; else if(qs.indexOf('pv=ctask')>=0) preview='ctask';
     else if(qs.indexOf('pv=message')>=0) preview='message'; else if(qs.indexOf('pv=task')>=0) preview='task'; }
   if(preview){ state=fresh(); state.dbg.preview=preview; return render(); }
