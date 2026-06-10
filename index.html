@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="MaNTrA quick review — Tattva Foundation research exercise">
+<meta property="og:description" content="A six-minute exercise on how block reports are read. Voluntary, no name collected. स्वैच्छिक, कोई नाम नहीं लिया जाता।">
+<title>MaNTrA quick review</title>
+<style>
+  :root{ --ink:#1b2530; --mut:#5f6d7c; --line:#dfe5eb; --bg:#eef1f5; --card:#fff; --brand:#1f7a5e; --brandlt:#e8f3ef; --focus:#2a7fd4; --err:#b3402f; }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}
+  .device{max-width:430px;margin:0 auto;min-height:100vh;background:var(--card);display:flex;flex-direction:column;box-shadow:0 0 0 1px var(--line);}
+  .track{height:7px;background:#e3e8ee;} .bar{height:7px;width:0;background:var(--brand);transition:width .3s;}
+  .head{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border-bottom:1px solid var(--line);}
+  .head b{font-size:15px;} .lang{font-size:13px;color:var(--brand);background:none;border:1px solid var(--line);border-radius:8px;padding:5px 9px;cursor:pointer;}
+  .app{padding:18px 16px;flex:1;} .foot{padding:14px 16px;border-top:1px solid var(--line);}
+  h1{font-size:22px;margin:.1em 0 .4em;} h2{font-size:19px;margin:.1em 0 .5em;}
+  p{margin:.5em 0;} .mut{color:var(--mut);} .sm{font-size:14px;} .xs{font-size:12.5px;}
+  .role{font-size:14px;color:var(--mut);margin-bottom:10px;}
+  .q{font-size:16px;font-weight:600;margin:20px 0 8px;} .q.miss{color:var(--err);}
+  .qn{display:inline-block;font-size:12px;font-weight:700;color:var(--brand);background:var(--brandlt);border-radius:7px;padding:1px 8px;margin-right:7px;vertical-align:1px;}
+  .opts{display:flex;flex-direction:column;gap:9px;} .opt{border:1.5px solid var(--line);border-radius:12px;padding:14px;font:inherit;text-align:left;background:#fff;cursor:pointer;}
+  .opt.on{border-color:var(--brand);background:var(--brandlt);color:#13503e;font-weight:600;}
+  .opt:focus-visible,.btn:focus-visible,.chip:focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
+  .chips{display:flex;gap:9px;flex-wrap:wrap;} .chip{border:1.5px solid var(--line);border-radius:11px;padding:12px 16px;font:inherit;background:#fff;cursor:pointer;}
+  .chip.on{border-color:var(--brand);background:var(--brandlt);color:#13503e;font-weight:700;}
+  .err{color:var(--err);font-size:14px;margin-top:8px;display:none;} .err.on{display:block;}
+  .hint{font-size:13.5px;margin-top:8px;padding:9px 11px;border-radius:9px;display:none;}
+  .hint.again{display:block;background:#f3f6f9;color:#3c4651;border:1px solid #d4dde6;}
+  .hint.ok{display:block;background:var(--brandlt);color:#13503e;border:1px solid #bfe0d8;}
+  .btn{display:block;width:100%;border:0;border-radius:14px;padding:16px;font:inherit;font-weight:700;color:#fff;background:var(--brand);cursor:pointer;}
+  .btn:disabled{opacity:.4;} .btn.sec{background:#eef1f5;color:var(--ink);font-weight:600;margin-top:10px;}
+  label.fld{display:block;font-weight:600;margin:14px 0 5px;}
+  .dummy{background:#fdf4e3;color:#8a5a12;font-size:12px;text-align:center;padding:6px 12px;}
+  .consent{border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:13.5px;line-height:1.45;color:#3c4651;background:#fafbfc;margin-top:12px;}
+  .exp{margin-top:14px;border:1px solid var(--line);border-radius:12px;} .exp summary{padding:12px 14px;cursor:pointer;font-weight:600;font-size:14px;color:var(--mut);}
+  .exparea{width:100%;min-height:120px;font:11px ui-monospace,Menlo,monospace;border:1px solid var(--line);border-radius:9px;padding:10px;}
+  .msg{background:#eaf4f0;border:1px solid #bfe0d8;border-left:4px solid #1f7a5e;border-radius:10px;padding:13px 15px;font-size:16px;line-height:1.5;color:#14503e;margin:6px 0 4px;}
+  .msg.neutral{background:#f3f6f9;border-color:#d4dde6;border-left-color:#7c8794;color:#3c4651;}
+  .msg p{margin:.45em 0;}
+  .mline{display:flex;align-items:flex-start;gap:10px;margin:9px 0;}
+  .mline p{margin:0;flex:1;}
+  .mico{flex:0 0 26px;margin-top:1px;opacity:.9;}
+  .mimg{display:block;width:100%;max-height:180px;object-fit:contain;border-radius:10px;margin:0 auto 10px;}
+  .timer{position:sticky;top:0;z-index:3;background:#fff;border:1px solid var(--line);border-radius:10px;padding:7px 12px;font-size:14px;font-weight:600;color:var(--mut);text-align:center;margin-bottom:10px;}
+  .timer.up{color:#9a3b2c;background:#fdf1ef;border-color:#f0c4bc;}
+  .dbanner{background:#eaf4f0;border:1px solid #bfe0d8;border-left:4px solid #1f7a5e;border-radius:10px;padding:10px 13px;font-size:13px;line-height:1.4;color:#14503e;margin:0 0 12px;}
+  .dbanner.neutral{background:#f3f6f9;border-color:#d4dde6;border-left-color:#7c8794;color:#46505a;}
+  .repn{font-size:13px;font-weight:700;color:var(--brand);margin:0 0 8px;}
+  .mcard{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;}
+  .mchdr{background:#0d6e5c;color:#fff;padding:10px 13px;} .mchdr .mct{font-weight:700;font-size:14px;} .mchdr .mcs{font-size:12px;opacity:.92;margin-top:2px;}
+  .mflag{padding:9px 13px;background:#fff6e9;border-bottom:1px solid var(--line);font-size:14px;color:#7a4e10;}
+  .malso{padding:9px 13px 2px;font-size:12px;color:var(--mut);text-align:center;}
+  .mblk{padding:10px 13px;border-bottom:1px solid var(--line);} .mblk.flagged{background:#fdf6f4;box-shadow:inset 4px 0 0 #c0392b;}
+  .mbn{font-weight:700;font-size:14px;margin-bottom:5px;}
+  .mrow{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:13.5px;} .mrow .mk{flex:1;color:var(--mut);} .mrow .mv{font-weight:600;min-width:90px;text-align:right;}
+  .mband{font-size:11px;font-weight:700;padding:2px 7px;border-radius:6px;min-width:40px;text-align:center;}
+  .mband.g{background:#e3f5ea;color:#1c7a4a;} .mband.a{background:#fff3da;color:#9a6b12;} .mband.r{background:#fde4e0;color:#b3402f;}
+  .mdist{padding:10px 13px;background:#f0f6fc;box-shadow:inset 4px 0 0 #2a7fd4;border-bottom:1px solid var(--line);}
+  .mdl{font-size:12.5px;font-weight:700;color:#1d5e9e;margin-bottom:2px;}
+  .mdv{font-size:14px;font-weight:600;color:var(--ink);}
+  .mfoot{padding:8px 13px;font-size:12px;color:var(--mut);font-style:italic;}
+  .refcode{font:700 22px/1.2 ui-monospace,Menlo,monospace;letter-spacing:2px;background:#f3f6f9;border:1.5px dashed #b9c4cf;border-radius:10px;padding:12px;text-align:center;margin:8px 0;}
+</style>
+</head>
+<body>
+<div class="device">
+  <div class="track"><div id="bar" class="bar"></div></div>
+  <div class="head"><b id="brandlbl">MaNTrA quick review</b><button id="langbtn" class="lang">हिंदी</button></div>
+  <div id="dummy" class="dummy"></div>
+  <div id="app" class="app" role="main"></div>
+</div>
+<script>
+"use strict";
+/* ===== CONFIG (the only lines the team edits) ===== */
+var ENDPOINT='';                 // paste the Apps Script /exec URL here; empty = manual export fallback only
+var SINK_KEY='dtsa-cycle3';      // must match the .gs
+var CANON_URL='https://girdhari-bora.github.io/mantra-review/';  // official hosted link (share button)
+var DBG='k7x2';                  // ?dbg=k7x2 unlocks ?arm= ?ord= ?pv= and the Restart button
+var TASK_SECONDS=150;            // silent per-report time budget (overran flag only)
+var SHOW_TIMER=false;            // true restores a visible countdown (review verdict: keep false)
+var VER='c3_v2';
+/* matched illustrations, one per arm (paste base64 data URIs, e.g. 'data:image/png;base64,....').
+   RULE: both arms get an image of the same style and visual weight, or neither arm gets one. */
+var IMG_X='';                    // DTSA-arm illustration (flag = look into it, not a pointing finger)
+var IMG_Y='';                    // control-arm illustration (register -> same report for every district)
+
+/* ===== safe DOM builder (no innerHTML anywhere) ===== */
+function el(tag, attrs){ var n=document.createElement(tag); attrs=attrs||{};
+  for(var k in attrs){ var v=attrs[k]; if(v==null) continue;
+    if(k==='class') n.className=v; else if(k==='text') n.textContent=v;
+    else if(k.indexOf('on')===0 && typeof v==='function') n.addEventListener(k.slice(2).toLowerCase(), v);
+    else n.setAttribute(k,v); }
+  for(var i=2;i<arguments.length;i++){ var c=arguments[i]; if(c==null) continue;
+    if(Array.isArray(c)){ c.forEach(function(x){ if(x!=null) n.appendChild(typeof x==='string'?document.createTextNode(x):x); }); }
+    else n.appendChild(typeof c==='string'?document.createTextNode(c):c); }
+  return n; }
+
+/* ===== strings (Hindi = draft, pending native review) ===== */
+var L='en';
+var T={
+  brand:{en:"MaNTrA quick review",hi:"MaNTrA quick review"},
+  syn_full:{en:"Practice scenario — synthetic figures; no real block or facility is shown.",hi:"Practice report — number असली नहीं; कोई असली block या facility नहीं।"},
+  syn_short:{en:"Synthetic figures",hi:"असली data नहीं"},
+  w_title:{en:"A six-minute review",hi:"6 मिनट की एक छोटी review"},
+  w_body:{en:"You are reading this month's MaNTrA block reports for your district. A short practice, then two short reports, a few quick taps on each.",hi:"आपको अपने ज़िले की इस महीने की MaNTrA block report देखनी हैं। पहले एक छोटा practice, फिर 2 छोटी report — हर एक पर बस कुछ tap।"},
+  w_note:{en:"There is no right or wrong answer. We just want to know how you read the report.",hi:"कोई जवाब सही या गलत नहीं है। हम बस यह जानना चाहते हैं कि आप report को कैसे देखते हैं।"},
+  w_sponsor:{en:"A research exercise by Tattva Foundation, the team behind MaNTrA.",hi:"यह Tattva Foundation (MaNTrA team) की एक research exercise है।"},
+  c_body:{en:"Voluntary and unrelated to any appraisal of your work. We collect your role, experience, your answers, and how you use the screen (taps, time, scrolling) — no name or phone number. Responses are sent automatically to the research team as you go, stored securely, and reported only in aggregate. You may stop at any time by closing the page. To remove your responses later, quote the reference code shown at the end. This page never asks for your government login, password, or OTP. Questions: bkyadav@tattvafoundation.org",hi:"यह आपकी मर्ज़ी से है — आपके काम की किसी appraisal से कोई लेना-देना नहीं। हम सिर्फ़ आपका role, अनुभव, आपके जवाब और screen का इस्तेमाल (tap, समय, scroll) लेते हैं — कोई नाम या फ़ोन नंबर नहीं। आपके जवाब अपने आप research team तक पहुँचते हैं, सुरक्षित रहते हैं और सिर्फ़ जोड़कर (aggregate में) report होते हैं। आप कभी भी page बंद करके रुक सकते हैं। बाद में अपने जवाब हटवाने हों तो अंत में दिखने वाला reference code बता दें। यह page कभी भी आपका सरकारी login, password या OTP नहीं माँगता। सवाल: bkyadav@tattvafoundation.org"},
+  agree:{en:"I agree, start",hi:"मैं सहमत हूँ, शुरू करें"},
+  e_q:{en:"In your work, do you look at health programme or facility data?",hi:"क्या आप अपने काम में program या facility का health data देखते हैं?"},
+  yes:{en:"Yes",hi:"हाँ"},no:{en:"No",hi:"नहीं"},
+  e_out:{en:"Thank you. This study is for people who review programme data.",hi:"धन्यवाद। यह exercise उन लोगों के लिए है जो program का data देखते हैं।"},
+  r_q:{en:"Your role",hi:"आपका role"},
+  roles:{en:["Block manager","District manager","Monitoring / MIS","Facility review","Supervisor","Other"],hi:["Block manager","District manager","Monitoring / MIS","Facility review","Supervisor","अन्य"]},
+  cont:{en:"Continue",hi:"आगे बढ़ें"},
+  /* warm-up (data-reading practice, identical both arms, before the message) */
+  wu_intro:{en:"First, a quick practice. A report looks like this — each line shows one thing, and the coloured word next to it (Good / Avg / Low) tells you how it is doing.",hi:"पहले एक छोटा practice। Report ऐसी दिखती है — हर line एक चीज़ बताती है, और उसके आगे रंग में लिखा शब्द (अच्छा / औसत / कम) बताता है कि हाल कैसा है।"},
+  wu_title:{en:"Practice report",hi:"Practice report"},
+  wu_q:{en:"Which block had more deliveries this month?",hi:"इस महीने किस block में ज़्यादा deliveries हुईं?"},
+  wu_hint:{en:"Look at the Deliveries line in both blocks, then choose again.",hi:"दोनों block की Deliveries वाली line देखें, फिर चुनें।"},
+  wu_note:{en:"Note — sometimes a high % is good, sometimes a low % — the coloured word tells you which.",hi:"ध्यान दें — कभी ज़्यादा % अच्छा होता है, कभी कम % — रंग में लिखा शब्द ही बताता है।"},
+  wu_q2:{en:"In which block is % C-Section marked 'Good'?",hi:"किस block में % C-Section पर 'अच्छा' लिखा है?"},
+  wu_hint2:{en:"See the coloured word next to % C-Section in both blocks, then choose again.",hi:"दोनों block में % C-Section के आगे रंग में लिखा शब्द देखें, फिर चुनें।"},
+  wu_ok:{en:"Correct — that is how the report is read.",hi:"बिल्कुल सही — report ऐसे ही पढ़ी जाती है।"},
+  wu_move:{en:"No problem — let us move on.",hi:"कोई बात नहीं — आगे बढ़ते हैं।"},
+  /* arm messages (x = stance, y = inert), three short lines each, *bold* markers */
+  msg_x_l:{en:["If a block's numbers look worrying, the report puts a red mark on it — a *flag*.","A flag means *take a look*. It does not mean the block has done badly.","First understand the story behind the number. *Do not blame anyone* from the screen alone."],
+           hi:["Report में जिस block के number चिंता वाले लगते हैं, उस पर लाल निशान यानी *flag* लग जाता है।","Flag का मतलब है — *इसे देखना है*। यह फ़ैसला नहीं है कि block ने बुरा काम किया है।","पहले number के पीछे की कहानी समझें। सिर्फ़ screen देखकर *किसी को दोष न दें*।"]},
+  msg_y_l:{en:["This report is made from the *labour room register* that facilities fill in.","Every district gets this report in the *same format* every month.","So a report from any district can be *read the same way*."],
+           hi:["यह report facility में भरे जाने वाले *labour-room register* से बनती है।","हर ज़िले को हर महीने यही report *एक ही format* में मिलती है।","इसलिए किसी भी ज़िले की report *एक ही तरह* पढ़ी जा सकती है।"]},
+  /* short banner versions for the report screens */
+  msg_x_s:{en:"A flag means take a look — it does not mean the block is bad. Do not blame from the screen alone.",hi:"Flag का मतलब है — देखना है, यह नहीं कि block खराब है। सिर्फ़ screen देखकर दोष न दें।"},
+  msg_y_s:{en:"This report comes from facility labour room registers, in the same format for every district.",hi:"यह report facility के labour-room register से बनती है — हर ज़िले के लिए एक ही format।"},
+  cc_q_x:{en:"Quick check — according to the note, a red flag on a block means…",hi:"छोटा सा check — note के हिसाब से, block पर लाल flag का मतलब है…"},
+  cc_o_x:{en:["The block has done badly — it is the block's fault","Take a look — it is not a decision about the block yet","It is the final result for the month"],hi:["Block ने बुरा काम किया है — गलती उसी की है","इसे देखना है — यह अभी block पर कोई फ़ैसला नहीं है","यह महीने का final नतीजा है"]},
+  cc_q_y:{en:"Quick check — according to the note, this report is made from…",hi:"छोटा सा check — note के हिसाब से, यह report बनती है…"},
+  cc_o_y:{en:["The labour room register filled at facilities","A yearly state survey","Estimates made at the state level"],hi:["Facility में भरे गए labour-room register से","साल में एक बार होने वाले राज्य survey से","राज्य स्तर पर लगाए गए अंदाज़े से"]},
+  cc_hint:{en:"Please read the note above once more, then choose again.",hi:"ऊपर का note एक बार फिर पढ़ लें, फिर चुनें।"},
+  cc_ok:{en:"Thank you — that is clear.",hi:"धन्यवाद — समझ आ गया।"},
+  rep_of:{en:"Report {1} of 2 · {2}",hi:"Report {1} / 2 · {2}"},
+  qn:{en:"Q{1} of 5",hi:"सवाल {1}/5"},
+  tri_q:{en:"{1} — what will you do this month?",hi:"{1} — इस महीने आप क्या करेंगे?"},
+  tri_o:{en:["Check it now","Keep watching — see it again next month","It is fine — nothing to do now"],hi:["अभी चेक करेंगे","नज़र रखेंगे — अगले महीने फिर देखेंगे","ठीक है — अभी कुछ करने की ज़रूरत नहीं"]},
+  q1:{en:"Which block most needs your attention this month?",hi:"इस महीने किस block पर सबसे ज़्यादा ध्यान देना चाहिए?"},
+  q1_both:{en:"Both",hi:"दोनों"}, q1_hard:{en:"Cannot say without checking",hi:"बिना जाँचे कहना मुश्किल"},
+  q3:{en:"Do these numbers mainly show how the blocks are working, or other things too?",hi:"ये number ज़्यादातर block का काम दिखाते हैं, या इनके पीछे और बातें भी हैं?"},
+  q3o:{en:["Mostly the block's work — that is what the report is for","Other things too — I would check more before deciding"],hi:["ज़्यादातर block का काम — report इसी के लिए होती है","कुछ और बातें भी — मानने से पहले मैं और जाँच करूँगा"]},
+  q4:{en:"Your first step for this district?",hi:"इस ज़िले के लिए आपका पहला कदम?"},
+  q4o:{en:["Ask {1} to explain its numbers and send an improvement plan","First ask the MIS team if this month's data entry is complete","Ask {1} how many of its cases came referred from other places","Do nothing — the numbers look okay this month"],hi:["{1} से कहेंगे कि अपने number समझाए और सुधार plan भेजे","पहले MIS team से पूछेंगे कि इस महीने की entry पूरी हुई या नहीं","{1} से पूछेंगे कि कितने case बाहर से refer होकर आए हैं","कुछ नहीं करेंगे — number इस महीने ठीक लगते हैं"]},
+  pick_missing:{en:"A question above is still unanswered.",hi:"ऊपर एक सवाल अभी बाकी है।"},
+  time_left:{en:"Time",hi:"समय"}, time_up:{en:"Time's up — please finish",hi:"समय समाप्त — कृपया पूरा करें"},
+  d2_title:{en:"About you — last step",hi:"आपके बारे में — आख़िरी step"},
+  d_exp:{en:"Years of experience",hi:"कितने साल का अनुभव"},
+  exps:{en:["Under 2","2 to 5","6 to 10","Over 10"],hi:["2 से कम","2 से 5","6 से 10","10 से ज़्यादा"]},
+  d_fq:{en:"How often do you look at dashboards or data reports in your work?",hi:"काम में dashboard या data report कितनी बार देखते हैं?"},
+  fqo:{en:["Weekly or more","Monthly","Rarely"],hi:["हफ़्ते में एक बार या ज़्यादा","महीने में एक बार","कभी-कभी"]},
+  d_pp:{en:"In the past year, have you taken part in an interview or questionnaire from this research team?",hi:"पिछले 1 साल में क्या आपने इस research team के किसी interview या form में हिस्सा लिया है?"},
+  ppo:{en:["Yes","No","Not sure"],hi:["हाँ","नहीं","पक्का याद नहीं"]},
+  end_t:{en:"Done — thank you",hi:"पूरा हुआ — धन्यवाद"},
+  end_b:{en:"Your judgement as someone who works with block reports is exactly what this exercise needed.",hi:"Block report के साथ काम करने वाले लोगों की राय ही इस exercise के लिए सबसे ज़रूरी थी।"},
+  end_debrief:{en:"This was a research exercise on how block reports are read. The figures were synthetic — nothing you tapped is reported against any person, block, or facility.",hi:"यह एक research exercise थी — कि block report कैसे पढ़ी जाती है। सारे number बनाए हुए थे, असली नहीं — आपके जवाब किसी व्यक्ति, block या facility के ख़िलाफ़ नहीं जाएँगे।"},
+  ref_label:{en:"Your reference code (to remove your responses later):",hi:"आपका reference code (बाद में जवाब हटवाने के लिए):"},
+  share:{en:"Share with colleagues who review reports",hi:"उन साथियों को भेजें जो report देखते हैं"},
+  shared:{en:"Link copied",hi:"Link copy हो गया"},
+  already_t:{en:"Already completed — thank you",hi:"पहले ही पूरा हो चुका है — धन्यवाद"},
+  already_b:{en:"This phone has already completed the review. Each phone can take part once.",hi:"इस फ़ोन से यह review पहले ही पूरी हो चुकी है। हर फ़ोन से एक ही बार हिस्सा लिया जा सकता है।"},
+  sendfail:{en:"Could not reach the internet — your answers are saved on this phone and will be sent automatically when you next open this link with signal.",hi:"Internet नहीं मिला — आपके जवाब इस फ़ोन में save हैं। अगली बार signal मिलने पर यह link खोलें, जवाब अपने आप चले जाएँगे।"},
+  res_team:{en:"For the research team: this device's data",hi:"Research team के लिए: इस device का data"},
+  copy:{en:"Copy",hi:"Copy"},dl:{en:"Download",hi:"Download"},restart:{en:"Restart (team only)",hi:"फिर से शुरू (सिर्फ़ team)"},copied:{en:"Copied",hi:"Copy हो गया"},
+  flagged_lbl:{en:"Flagged this month",hi:"इस महीने flag हुआ"},
+  also_lbl:{en:"— also on your block list —",hi:"— आपकी block list में भी —"},
+  sub_lbl:{en:"Block view · 26-27 (Apr–May) · provisional",hi:"Block view · 26-27 (अप्रैल–मई) · अभी अधूरा"},
+  dist_lbl:{en:"average of all blocks, for comparison",hi:"सभी block का औसत — तुलना के लिए"},
+  foot_lbl:{en:"Data entry runs ~2–3 weeks behind; this month is still settling.",hi:"Data entry करीब 2–3 हफ़्ते पीछे चलती है; इस महीने के number अभी पूरे हो रहे हैं।"},
+  bands:{en:{high:"High",low:"Low",avg:"Avg",good:"Good"},hi:{high:"ज़्यादा",low:"कम",avg:"औसत",good:"अच्छा"}}
+};
+function S(k){ var o=T[k]; if(!o) return k; return (o[L]!=null?o[L]:o.en); }
+function arr(k){ var o=T[k]; return (o&&o[L])?o[L]:(o?o.en:[]); }
+function fmt(s){ var out=s; for(var i=1;i<arguments.length;i++) out=out.split('{'+i+'}').join(arguments[i]); return out; }
+
+/* ===== scenarios (synthetic, parallel trap structure) ===== */
+var SCEN={
+  A:{ district:"District A", div:"Division 2",
+    flagged:{name:"Block 16",label:"Block 16 · District Hospital (DH) block · FRU",rows:[
+      ["Deliveries","1,652",null],["% C-Section","36","high"],["% LBW","27","low"],
+      ["Stillbirths /1000","21","low"],["ANCS (<34 wk)","48%","low"],["Sex Ratio","920","low"]]},
+    quiet:{name:"Block 13",label:"Block 13",rows:[
+      ["Deliveries","264",null],["% C-Section","0","low"],["% LBW","11","avg"],
+      ["Stillbirths /1000","0","good"],["ANCS (<34 wk)","0% (0 of 4)","low"],["Sex Ratio","887","low"]]},
+    ref:"%CS 11 · %LBW 17 · Stillbirths 9/1000 · ANCS 48%" },
+  B:{ district:"District B", div:"Division 4",
+    flagged:{name:"Block 7",label:"Block 7 · District Hospital (DH) block · FRU",rows:[
+      ["Deliveries","1,418",null],["% C-Section","33","high"],["% LBW","24","low"],
+      ["Stillbirths /1000","18","low"],["ANCS (<34 wk)","52%","low"],["Sex Ratio","915","low"]]},
+    quiet:{name:"Block 4",label:"Block 4",rows:[
+      ["Deliveries","301",null],["% C-Section","2","low"],["% LBW","10","avg"],
+      ["Stillbirths /1000","0","good"],["ANCS (<34 wk)","8% (1 of 12)","low"],["Sex Ratio","902","low"]]},
+    ref:"%CS 12 · %LBW 16 · Stillbirths 8/1000 · ANCS 51%" }
+};
+function bandClass(b){ return b==='good'?'g':(b==='avg'?'a':'r'); }
+function buildCard(scn){
+  var box=el('div'), card=el('div',{class:'mcard'});
+  card.appendChild(el('div',{class:'mchdr'}, el('div',{class:'mct',text:"MaNTrA — Labour Room Online MIS"}), el('div',{class:'mcs',text:'UP · '+scn.div+' · '+scn.district+' · '+S('sub_lbl')})));
+  card.appendChild(el('div',{class:'mflag'}, el('b',{text:'⚑ '+S('flagged_lbl')+': '}), scn.flagged.name));
+  [['f',scn.flagged],['q',scn.quiet]].forEach(function(pair){
+    var rolekey=pair[0], b=pair[1];
+    if(rolekey==='q') card.appendChild(el('div',{class:'malso',text:S('also_lbl')}));
+    var blk=el('div',{class:'mblk'+(rolekey==='f'?' flagged':''),'data-blk':rolekey});
+    blk.appendChild(el('div',{class:'mbn',text:b.label}));
+    b.rows.forEach(function(r){ var row=el('div',{class:'mrow'}, el('span',{class:'mk',text:r[0]}), el('span',{class:'mv',text:r[1]}));
+      if(r[2]) row.appendChild(el('span',{class:'mband '+bandClass(r[2]),text:S('bands')[r[2]]})); blk.appendChild(row); });
+    card.appendChild(blk);
+  });
+  card.appendChild(el('div',{class:'mdist'},
+    el('div',{class:'mdl',text:scn.district+' — '+S('dist_lbl')}),
+    el('div',{class:'mdv',text:scn.ref})));
+  card.appendChild(el('div',{class:'mfoot',text:S('foot_lbl')}));
+  box.appendChild(card); return box;
+}
+
+/* ===== identity, state, persistence ===== */
+var K_RUN='c3_run_v2', K_DEV='c3_dev_v2', K_DONE='c3_done_v2', K_OUT='c3_outbox_v2';
+function rid(n){ var s='',i; try{ var a=new Uint8Array(n); crypto.getRandomValues(a); for(i=0;i<n;i++) s+=(a[i]%36).toString(36); }catch(e){ for(i=0;i<n;i++) s+=Math.floor(Math.random()*36).toString(36); } return s; }
+function lsGet(k){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):null; }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+function getDev(){ var d=lsGet(K_DEV);
+  if(!d){ d={dv:rid(10), g:(Math.random()<0.5?'x':'y'), at:Date.now(), n:0}; lsSet(K_DEV,d); }
+  return d; }
+var dev=null;
+function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t; } return a; }
+function blankResp(){ return { tf:null,tq:null,q1:null,q3:null,q4:null, tl:[], ft:null, tp:0, sx:0,
+  dw:{f_pre:0,f_post:0,q_pre:0,q_post:0,o_pre:0,o_post:0}, ms:0, t0:0, t1:0, rs:0, fl:0, ov:false }; }
+function fresh(){ dev.n++; lsSet(K_DEV,dev);
+  return { pid:rid(12), step:'welcome', lang:L, ls:0, lm:'', lt:'',
+    role:'', exp:'', fq:'', pp:'',
+    wu:{at:0,ok:false,at2:0,ok2:false,ms:0},
+    cc:{attempts:0,passed:false},
+    order: shuffle(['A','B']),
+    pm:{ g:shuffle([0,1,2]), q1:(Math.random()<0.5?1:0), q3:shuffle([0,1]), q4:shuffle([0,1,2,3]) },
+    resp:{A:blankResp(),B:blankResp()},
+    seq:0, startedAt:Date.now(), done:false,
+    dbg:{forced:false,preview:''}, ch:'' }; }
+function loadRun(){ var s=lsGet(K_RUN); return (s&&s.pid)?s:null; }
+function save(){ if(preview) return; lsSet(K_RUN,state); }
+var state=null, preview=null, dbgOK=false;
+
+/* ===== outbox: staged, queued, offline-safe submission ===== */
+function qpush(evt,payload){ if(preview) return;
+  state.seq++;
+  var row={ k:SINK_KEY, e:evt, pid:state.pid, dv:dev.dv, n:dev.n, g:dev.g, q:state.seq, ts:Date.now(),
+    ch:state.ch, dbg:(state.dbg.forced||state.dbg.preview)?1:0, p:payload||null };
+  var out=lsGet(K_OUT)||[]; out.push(row); if(out.length>200) out=out.slice(-200); lsSet(K_OUT,out);
+  save(); flush(); }
+var flushing=false;
+function flush(){ if(!ENDPOINT||flushing) return; var out=lsGet(K_OUT)||[]; if(!out.length) return;
+  flushing=true;
+  var next=function(){ var cur=lsGet(K_OUT)||[];
+    if(!cur.length){ flushing=false; return; }
+    post(JSON.stringify(cur[0]), function(ok){
+      if(ok){ var c2=lsGet(K_OUT)||[]; c2.shift(); lsSet(K_OUT,c2); next(); }
+      else { flushing=false; } }); };
+  next(); }
+function post(body,cb){
+  if(window.fetch){ fetch(ENDPOINT,{method:'POST',body:body,keepalive:true}).then(function(r){cb(!!r&&r.ok!==false);}).catch(function(){cb(false);}); }
+  else { try{ var x=new XMLHttpRequest(); x.open('POST',ENDPOINT,true);
+    x.onreadystatechange=function(){ if(x.readyState===4) cb(x.status>=200&&x.status<400); };
+    x.send(body); }catch(e){ cb(false); } } }
+function beaconFlush(){ if(!ENDPOINT||!navigator.sendBeacon) return; var out=lsGet(K_OUT)||[]; var left=[];
+  out.forEach(function(row){ var ok=false; try{ ok=navigator.sendBeacon(ENDPOINT,JSON.stringify(row)); }catch(e){}
+    if(!ok) left.push(row); });
+  lsSet(K_OUT,left); }
+
+/* ===== telemetry: midpoint sampler (250 ms), pre/post first tap ===== */
+var TE={iv:null,vis:null,scr:null,R:null};
+function blockAtMid(){ var mid=(window.innerHeight||document.documentElement.clientHeight)/2;
+  var els=document.querySelectorAll('[data-blk]');
+  for(var i=0;i<els.length;i++){ var r=els[i].getBoundingClientRect(); if(r.top<=mid&&r.bottom>=mid) return els[i].getAttribute('data-blk'); }
+  return 'o'; }
+function startTele(R){ stopTele();
+  if(!R.t0){ R.t0=Date.now(); } else { R.rs++; }
+  TE.R=R;
+  TE.iv=setInterval(function(){ if(document.hidden) return;
+    R.ms+=250; var b=blockAtMid(); if(b!=='f'&&b!=='q') b='o';
+    R.dw[b+'_'+(R.tp>0?'post':'pre')]+=250; },250);
+  TE.scr=function(){ var h=document.documentElement; var max=(h.scrollHeight-h.clientHeight);
+    var p=max>0?Math.min(100,Math.round((h.scrollTop||window.pageYOffset||0)/max*100)):100; if(p>R.sx)R.sx=p; };
+  window.addEventListener('scroll',TE.scr,{passive:true}); TE.scr();
+  TE.vis=function(){ if(document.hidden){ R.fl++; save(); beaconFlush(); } };
+  document.addEventListener('visibilitychange',TE.vis);
+  save(); }
+function stopTele(){ if(TE.iv){ clearInterval(TE.iv); TE.iv=null; }
+  if(TE.scr){ window.removeEventListener('scroll',TE.scr); TE.scr=null; }
+  if(TE.vis){ document.removeEventListener('visibilitychange',TE.vis); TE.vis=null; }
+  if(TE.R){ save(); TE.R=null; } }
+function tap(R,qid,orig){ if(R.ft==null&&R.t0) R.ft=Date.now()-R.t0; R.tp++;
+  if(R.tl.length<60) R.tl.push({q:qid,i:orig,t:R.t0?(Date.now()-R.t0):0}); }
+
+/* ===== flow ===== */
+var ORDER=['welcome','elig','role','warmup','message','task1','task2','demo2','end'];
+function setBar(){ var i=ORDER.indexOf(state.step); document.getElementById('bar').style.width=Math.max(0,i/(ORDER.length-1)*100)+'%'; }
+function mountBF(body,foot){ stopTele();
+  var a=document.getElementById('app'); while(a.firstChild) a.removeChild(a.firstChild);
+  while(body.firstChild) a.appendChild(body.firstChild);
+  var dev2=document.querySelector('.device'); var old=document.getElementById('livefoot'); if(old) old.parentNode.removeChild(old);
+  if(foot){ foot.id='livefoot'; dev2.appendChild(foot); } window.scrollTo(0,0); }
+function pageFoot(label,fn,dis){ var b=el('button',{class:'btn',onclick:fn},label); if(dis) b.disabled=true; return el('div',{class:'foot'},b); }
+function go(s){ state.step=s; save(); render(); }
+
+function render(){
+  document.getElementById('brandlbl').textContent=S('brand');
+  document.getElementById('langbtn').textContent=(L==='en'?'हिंदी':'English');
+  var s=state?state.step:'welcome';
+  document.getElementById('dummy').textContent=(s==='welcome'||preview)?S('syn_full'):S('syn_short');
+  if(preview){ if(preview==='warmup') return scrWarmup();
+    if(preview==='message'){ dev.g='x'; return scrMessage(); }
+    if(preview==='task'){ dev.g='x'; return scrTask(0); }
+    if(preview==='cmessage'){ dev.g='y'; return scrMessage(); }
+    if(preview==='ctask'){ dev.g='y'; return scrTask(0); } }
+  setBar();
+  if(s==='welcome'||s==null) return scrWelcome();
+  if(s==='elig') return scrElig();
+  if(s==='role') return scrRole();
+  if(s==='warmup') return scrWarmup();
+  if(s==='message') return scrMessage();
+  if(s==='task1') return scrTask(0);
+  if(s==='task2') return scrTask(1);
+  if(s==='demo2') return scrDemo2();
+  if(s==='end') return scrEnd();
+}
+
+function scrWelcome(){
+  mountBF(el('div',{class:'app'},
+    el('h1',{text:S('w_title')}),
+    el('p',{text:S('w_body')}),
+    el('p',{class:'mut sm',text:S('w_note')}),
+    el('p',{class:'mut xs',text:S('w_sponsor')}),
+    el('div',{class:'consent',text:S('c_body')})),
+  pageFoot(S('agree'),function(){
+    qpush('start',{ua:(navigator.userAgent||'').slice(0,140), sc:(screen.width+'x'+screen.height+'@'+(window.devicePixelRatio||1)), lg:L});
+    go('elig'); }));
+}
+function scrElig(){
+  mountBF(el('div',{class:'app'}, el('h2',{text:S('e_q')}), el('div',{class:'opts'},
+    el('button',{class:'opt',onclick:function(){go('role');}},S('yes')),
+    el('button',{class:'opt',onclick:function(){ qpush('inelig',null); mountBF(el('div',{class:'app'},el('h2',{text:S('e_out')})),null); }},S('no')))), null);
+}
+function scrRole(){
+  var wrap=el('div',{class:'opts'});
+  arr('roles').forEach(function(r,i){
+    wrap.appendChild(el('button',{class:'opt'+(state.role===T.roles.en[i]?' on':''),onclick:function(){
+      state.role=T.roles.en[i]; save();
+      Array.prototype.forEach.call(wrap.children,function(c){c.classList.remove('on');});
+      wrap.children[i].classList.add('on'); cont.disabled=false; }},r)); });
+  var cont=el('button',{class:'btn',onclick:function(){ qpush('assign',{ro:state.role}); go('warmup'); }},S('cont'));
+  cont.disabled=!state.role;
+  mountBF(el('div',{class:'app'}, el('h2',{text:S('r_q')}), wrap), el('div',{class:'foot'},cont));
+}
+
+function buildWuCard(){
+  var card=el('div',{class:'mcard'});
+  card.appendChild(el('div',{class:'mchdr'}, el('div',{class:'mct',text:S('wu_title')})));
+  [ ['Block 5',[['Deliveries','420',null],['% C-Section','33','high'],['Data entry','','good']]],
+    ['Block 9',[['Deliveries','180',null],['% C-Section','9','good'],['Data entry','','avg']]] ].forEach(function(b){
+    var blk=el('div',{class:'mblk'});
+    blk.appendChild(el('div',{class:'mbn',text:b[0]}));
+    b[1].forEach(function(r){ var row=el('div',{class:'mrow'}, el('span',{class:'mk',text:r[0]}), el('span',{class:'mv',text:r[1]}));
+      if(r[2]) row.appendChild(el('span',{class:'mband '+bandClass(r[2]),text:S('bands')[r[2]]}));
+      blk.appendChild(row); });
+    card.appendChild(blk);
+  });
+  return card;
+}
+function scrWarmup(){
+  var t0=Date.now();
+  var body=el('div',{class:'app'});
+  body.appendChild(el('div',{class:'role',text:S('wu_intro')}));
+  body.appendChild(buildWuCard());
+  body.appendChild(el('div',{class:'role',style:'margin-top:10px',text:S('wu_note')}));
+  var contBtn=el('button',{class:'btn',onclick:function(){
+    qpush('warmup',{at:state.wu.at, ok:state.wu.ok?1:0, at2:state.wu.at2, ok2:state.wu.ok2?1:0, ms:state.wu.ms}); go('message'); }});
+  contBtn.textContent=S('cont');
+  function settled(){ return (state.wu.ok||state.wu.at>=2)&&(state.wu.ok2||state.wu.at2>=2); }
+  function upd(){ if(settled()){ if(!state.wu.ms) state.wu.ms=Date.now()-t0; contBtn.disabled=false; } }
+  contBtn.disabled=!settled();
+  function quiz(qText,correct,hintText,fAt,fOk){
+    var hint=el('div',{class:'hint'});
+    var wrap=el('div',{class:'opts'});
+    ['Block 5','Block 9'].forEach(function(label,i){
+      var b=el('button',{class:'opt',onclick:function(){
+        state.wu[fAt]++;
+        Array.prototype.forEach.call(wrap.children,function(c){c.classList.remove('on');});
+        if(i===correct){ state.wu[fOk]=true; b.classList.add('on'); hint.className='hint ok'; hint.textContent=S('wu_ok'); }
+        else if(state.wu[fAt]>=2){ hint.className='hint again'; hint.textContent=S('wu_move'); }
+        else { hint.className='hint again'; hint.textContent=hintText; }
+        upd(); save();
+      }}, label);
+      wrap.appendChild(b); });
+    return el('div',{}, el('div',{class:'q',text:qText}), wrap, hint);
+  }
+  body.appendChild(quiz(S('wu_q'),0,S('wu_hint'),'at','ok'));
+  body.appendChild(quiz(S('wu_q2'),1,S('wu_hint2'),'at2','ok2'));
+  mountBF(body, el('div',{class:'foot'}, contBtn));
+}
+
+function boldP(s){ var p=el('p'); s.split('*').forEach(function(seg,i){ if(!seg) return;
+  p.appendChild(i%2?el('b',{text:seg}):document.createTextNode(seg)); }); return p; }
+/* tiny inline SVG icons (createElementNS, no innerHTML) — identical size/stroke in both arms */
+var SVGNS='http://www.w3.org/2000/svg';
+function svgEl(tag,attrs){ var n=document.createElementNS(SVGNS,tag); for(var k in attrs) n.setAttribute(k,attrs[k]);
+  for(var i=2;i<arguments.length;i++){ if(arguments[i]) n.appendChild(arguments[i]); } return n; }
+function icon(kind){
+  var s=svgEl('svg',{viewBox:'0 0 24 24',width:'26',height:'26',fill:'none',
+    stroke:'currentColor','stroke-width':'1.8','stroke-linecap':'round','stroke-linejoin':'round','aria-hidden':'true'});
+  if(kind==='flag'){ s.appendChild(svgEl('path',{d:'M6 21V3'}));
+    s.appendChild(svgEl('path',{d:'M6 4h11l-2.5 3.5L17 11H6z',fill:'#c0392b',stroke:'#c0392b'})); }
+  if(kind==='look'){ s.appendChild(svgEl('circle',{cx:'10.5',cy:'10.5',r:'6'}));
+    s.appendChild(svgEl('path',{d:'M15 15l5 5'})); }
+  if(kind==='noblame'){ s.appendChild(svgEl('path',{d:'M5 12.5h8'}));
+    s.appendChild(svgEl('circle',{cx:'7',cy:'14.5',r:'2.2'}));
+    s.appendChild(svgEl('circle',{cx:'12',cy:'12',r:'9',stroke:'#c0392b'}));
+    s.appendChild(svgEl('path',{d:'M5.6 5.6l12.8 12.8',stroke:'#c0392b'})); }
+  if(kind==='book'){ s.appendChild(svgEl('rect',{x:'5',y:'4',width:'14',height:'16',rx:'2'}));
+    s.appendChild(svgEl('path',{d:'M8 8h8M8 12h8M8 16h5'})); }
+  if(kind==='grid'){ s.appendChild(svgEl('rect',{x:'4',y:'5',width:'16',height:'15',rx:'2'}));
+    s.appendChild(svgEl('path',{d:'M4 10h16M10 10v10M16 10v10'})); }
+  if(kind==='eye'){ s.appendChild(svgEl('path',{d:'M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z'}));
+    s.appendChild(svgEl('circle',{cx:'12',cy:'12',r:'2.6'})); }
+  return s; }
+var MSG_ICONS={x:['flag','look','noblame'],y:['book','grid','eye']};
+function msgLine(kind,text){ return el('div',{class:'mline'}, el('span',{class:'mico'},icon(kind)), boldP(text)); }
+function scrMessage(){
+  var isX=(dev.g==='x');
+  var ccq=isX?S('cc_q_x'):S('cc_q_y');
+  var ccoAll=isX?arr('cc_o_x'):arr('cc_o_y');
+  var correct=isX?1:0;
+  var order=state?state.pm.g:[0,1,2];
+  var body=el('div',{class:'app'});
+  var img=isX?IMG_X:IMG_Y;
+  if(img) body.appendChild(el('img',{class:'mimg',src:img,alt:''}));
+  var box=el('div',{class:'msg'+(isX?'':' neutral')});
+  var icons=MSG_ICONS[isX?'x':'y'];
+  (isX?arr('msg_x_l'):arr('msg_y_l')).forEach(function(line,i){ box.appendChild(msgLine(icons[i],line)); });
+  body.appendChild(box);
+  body.appendChild(el('div',{class:'q',text:ccq}));
+  var hint=el('div',{class:'hint'});
+  var wrap=el('div',{class:'opts'});
+  var contBtn=el('button',{class:'btn',onclick:function(){ state.lm=L; qpush('gate',{ca:state.cc.attempts,lm:L}); go('task1'); }});
+  contBtn.textContent=S('cont'); contBtn.disabled=true;
+  order.forEach(function(orig){
+    var b=el('button',{class:'opt',onclick:function(){
+      if(state){ state.cc.attempts++; }
+      Array.prototype.forEach.call(wrap.children,function(c){c.classList.remove('on');});
+      if(orig===correct){ b.classList.add('on'); if(state) state.cc.passed=true;
+        hint.className='hint ok'; hint.textContent=S('cc_ok'); contBtn.disabled=false; }
+      else { hint.className='hint again'; hint.textContent=S('cc_hint'); contBtn.disabled=true; }
+      if(state) save();
+    }}, ccoAll[orig]);
+    wrap.appendChild(b);
+  });
+  body.appendChild(wrap); body.appendChild(hint);
+  mountBF(body, el('div',{class:'foot'}, contBtn));
+}
+
+function optPanel(R,qid,labels,origIdxs,onSel){
+  var wrap=el('div',{class:'opts'});
+  origIdxs.forEach(function(orig,pos){
+    var b=el('button',{class:'opt'+(R[qid]===orig?' on':''),onclick:function(){
+      R[qid]=orig; tap(R,qid,orig);
+      Array.prototype.forEach.call(wrap.children,function(c){c.classList.remove('on');});
+      b.classList.add('on'); if(onSel) onSel(); save(); }}, labels[orig]);
+    wrap.appendChild(b); });
+  return wrap;
+}
+
+function scrTask(pos){
+  var scnId=state?state.order[pos]:'A';
+  var scn=SCEN[scnId];
+  var R=state?state.resp[scnId]:blankResp();
+  if(state&&!state.lt){ state.lt=L; }
+  var body=el('div',{class:'app'});
+  if(SHOW_TIMER){
+    var timer=el('div',{class:'timer'},S('time_left')+' '+fmtT(TASK_SECONDS));
+    body.appendChild(timer);
+  }
+  body.appendChild(el('div',{class:'repn',text:fmt(S('rep_of'),String(pos+1),scn.district)}));
+  body.appendChild(el('div',{class:'dbanner'+(dev.g==='x'?'':' neutral'),text:(dev.g==='x'?S('msg_x_s'):S('msg_y_s'))}));
+  body.appendChild(buildCard(scn));
+
+  var heads={};
+  function qhead(n,txt){ var h=el('div',{class:'q'}, el('span',{class:'qn',text:fmt(S('qn'),String(n))}), txt); return h; }
+
+  heads.tf=qhead(1,fmt(S('tri_q'),scn.flagged.name)); body.appendChild(heads.tf);
+  body.appendChild(optPanel(R,'tf',arr('tri_o'),[0,1,2]));
+  heads.tq=qhead(2,fmt(S('tri_q'),scn.quiet.name)); body.appendChild(heads.tq);
+  body.appendChild(optPanel(R,'tq',arr('tri_o'),[0,1,2]));
+
+  var q1labels=[scn.flagged.name,scn.quiet.name,S('q1_both'),S('q1_hard')];
+  var q1order=state&&state.pm.q1?[1,0,2,3]:[0,1,2,3];
+  heads.q1=qhead(3,S('q1')); body.appendChild(heads.q1);
+  body.appendChild(optPanel(R,'q1',q1labels,q1order));
+
+  heads.q3=qhead(4,S('q3')); body.appendChild(heads.q3);
+  body.appendChild(optPanel(R,'q3',arr('q3o'),state?state.pm.q3:[0,1]));
+
+  var q4labels=arr('q4o').map(function(s){ return fmt(s,scn.flagged.name); });
+  heads.q4=qhead(5,S('q4')); body.appendChild(heads.q4);
+  body.appendChild(optPanel(R,'q4',q4labels,state?state.pm.q4:[0,1,2,3]));
+
+  var err=el('div',{class:'err',text:S('pick_missing')}); body.appendChild(err);
+  var foot=pageFoot(S('cont'),function(){
+    var missing=['tf','tq','q1','q3','q4'].filter(function(q){ return R[q]==null; });
+    Object.keys(heads).forEach(function(q){ heads[q].classList.remove('miss'); });
+    if(missing.length){ missing.forEach(function(q){ heads[q].classList.add('miss'); });
+      err.classList.add('on');
+      var first=heads[missing[0]];
+      try{ first.scrollIntoView({block:'center'}); }catch(e){ window.scrollTo(0,first.offsetTop-80); }
+      return; }
+    stopTele(); R.t1=Date.now(); R.ov=(R.ms>TASK_SECONDS*1000); save();
+    qpush('scen',{scn:scnId,pos:pos+1,d:packResp(R)});
+    if(pos===0) go('task2'); else go('demo2');
+  });
+  mountBF(body,foot);
+  if(state) startTele(R);
+  if(SHOW_TIMER&&state){
+    R.dl=R.dl||((R.t0||Date.now())+TASK_SECONDS*1000);
+    var iv=setInterval(function(){ if(!document.getElementById('livefoot')){ clearInterval(iv); return; }
+      var leftS=Math.ceil((R.dl-Date.now())/1000);
+      if(leftS<=0){ clearInterval(iv); timer.className='timer up'; timer.textContent=S('time_up'); }
+      else { timer.textContent=S('time_left')+' '+fmtT(leftS); } },1000);
+  }
+}
+function fmtT(s){ var m=Math.floor(s/60); s=s%60; return m+':'+(s<10?'0':'')+s; }
+
+function scrDemo2(){
+  var body=el('div',{class:'app'}, el('h2',{text:S('d2_title')}));
+  function chipRow(field,labelsKey){
+    var wrap=el('div',{class:'opts'});
+    arr(labelsKey).forEach(function(x,i){
+      wrap.appendChild(el('button',{class:'opt'+(state[field]===T[labelsKey].en[i]?' on':''),onclick:function(){
+        state[field]=T[labelsKey].en[i]; save();
+        Array.prototype.forEach.call(wrap.children,function(c){c.classList.remove('on');});
+        wrap.children[i].classList.add('on'); check(); }},x)); });
+    return wrap; }
+  body.appendChild(el('label',{class:'fld',text:S('d_exp')})); body.appendChild(chipRow('exp','exps'));
+  body.appendChild(el('label',{class:'fld',text:S('d_fq')})); body.appendChild(chipRow('fq','fqo'));
+  body.appendChild(el('label',{class:'fld',text:S('d_pp')})); body.appendChild(chipRow('pp','ppo'));
+  var cont=el('button',{class:'btn',onclick:function(){ finishAll(); }},S('cont'));
+  function check(){ cont.disabled=!(state.exp&&state.fq&&state.pp); }
+  check();
+  mountBF(body, el('div',{class:'foot'},cont));
+}
+
+function packResp(R){ return { a:{tf:R.tf,tq:R.tq,q1:R.q1,q3:R.q3,q4:R.q4}, tl:R.tl, ft:R.ft, tp:R.tp,
+  ms:R.ms, wall:(R.t1&&R.t0)?(R.t1-R.t0):null, ov:R.ov?1:0, sx:R.sx, dw:R.dw, fl:R.fl, rs:R.rs }; }
+function fullPayload(){ return { v:VER, lm:state.lm, lt:state.lt, ls:state.ls,
+  ro:state.role, ex:state.exp, fq:state.fq, pp:state.pp,
+  wu:{at:state.wu.at, ok:state.wu.ok?1:0, at2:state.wu.at2, ok2:state.wu.ok2?1:0, ms:state.wu.ms},
+  ca:state.cc.attempts, ord:state.order.join(''),
+  pm:state.pm, ch:state.ch, dbgF:state.dbg,
+  ua:(navigator.userAgent||'').slice(0,140), sc:(screen.width+'x'+screen.height+'@'+(window.devicePixelRatio||1)),
+  s0:state.startedAt, s1:Date.now(),
+  scn:{A:packResp(state.resp.A),B:packResp(state.resp.B)} }; }
+function finishAll(){
+  state.done=true; save();
+  var row={ k:SINK_KEY, e:'complete', pid:state.pid, dv:dev.dv, n:dev.n, g:dev.g, q:++state.seq, ts:Date.now(),
+    ch:state.ch, dbg:(state.dbg.forced||state.dbg.preview)?1:0, p:fullPayload() };
+  if(!lsGet(K_DONE)) lsSet(K_DONE,row);
+  var out=lsGet(K_OUT)||[]; out.push(row); lsSet(K_OUT,out); save(); flush();
+  go('end');
+}
+
+function b64(s){ try{ return btoa(unescape(encodeURIComponent(s))); }catch(e){ return s; } }
+function researchFold(row){
+  var json=JSON.stringify(row);
+  var enc=b64(json);
+  var area=el('textarea',{class:'exparea',readonly:'readonly'}); area.value=enc;
+  var cb=el('button',{class:'btn sec',onclick:function(){ try{navigator.clipboard.writeText(enc);cb.textContent=S('copied');}catch(e){area.select();} }},S('copy'));
+  var db=el('button',{class:'btn sec',onclick:function(){ try{ var bl=new Blob([enc],{type:'text/plain'}); var u=URL.createObjectURL(bl);
+    var a=el('a',{href:u,download:'cycle3_'+(row.pid||'r')+'.txt'}); document.body.appendChild(a); a.click();
+    setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(u);},400);}catch(e){} }},S('dl'));
+  var inner=el('div',{style:'padding:0 14px 14px'}, area, cb, db);
+  if(dbgOK){ inner.appendChild(el('button',{class:'btn sec',onclick:function(){
+    qpush('restart',null);
+    try{ localStorage.removeItem(K_RUN); }catch(e){}
+    state=fresh(); state.step='welcome'; save(); render(); }},S('restart'))); }
+  return el('details',{class:'exp'}, el('summary',{text:S('res_team')}), inner);
+}
+function endCommon(titleKey,bodyKey,row){
+  var body=el('div',{class:'app'}, el('h2',{text:S(titleKey)}), el('p',{class:'mut',text:S(bodyKey)}),
+    el('p',{class:'mut sm',text:S('end_debrief')}),
+    el('p',{class:'sm',style:'margin-top:14px;font-weight:600',text:S('ref_label')}),
+    el('div',{class:'refcode',text:(row&&row.pid?row.pid.slice(-6).toUpperCase():'------')}));
+  var pending=(lsGet(K_OUT)||[]).length;
+  if(ENDPOINT&&pending>0) body.appendChild(el('p',{class:'xs mut',text:S('sendfail')}));
+  var sh=el('button',{class:'btn sec',onclick:function(){
+    var url=CANON_URL||location.href.split('?')[0];
+    if(navigator.share){ try{ navigator.share({title:S('brand'),url:url}); return; }catch(e){} }
+    try{ navigator.clipboard.writeText(url); sh.textContent=S('shared'); }catch(e){} }},S('share'));
+  body.appendChild(sh);
+  body.appendChild(researchFold(row||{}));
+  mountBF(body,null);
+}
+function scrEnd(){ endCommon('end_t','end_b',lsGet(K_DONE)||{pid:state.pid}); }
+function scrAlready(){ endCommon('already_t','already_b',lsGet(K_DONE)||{}); }
+
+/* ===== language toggle ===== */
+document.getElementById('langbtn').addEventListener('click',function(){
+  L=(L==='en'?'hi':'en'); if(state){ state.lang=L; state.ls++; save(); } render(); });
+
+/* ===== init ===== */
+(function init(){
+  dev=getDev();
+  var qs=location.search||'';
+  dbgOK=new RegExp('[?&]dbg='+DBG+'(&|$)').test(qs);
+  var ch=(qs.match(/[?&]c=([a-z0-9]{2,8})(&|$)/i)||[])[1]||'';
+  /* done-lock: a completed device only ever sees the thank-you screen */
+  if(lsGet(K_DONE)&&!dbgOK){ state=lsGet(K_RUN)||fresh(); flush(); return scrAlready(); }
+  var am=null, ord=null;
+  if(dbgOK){ am=(qs.match(/[?&]arm=(dtsa|control)/)||[])[1]||null;
+    ord=(qs.match(/[?&]ord=(AB|BA)/)||[])[1]||null;
+    if(qs.indexOf('hl=hi')>=0) L='hi';                 /* team-only: preview in Hindi */
+    if(qs.indexOf('pv=warmup')>=0) preview='warmup';
+    else if(qs.indexOf('pv=cmessage')>=0) preview='cmessage'; else if(qs.indexOf('pv=ctask')>=0) preview='ctask';
+    else if(qs.indexOf('pv=message')>=0) preview='message'; else if(qs.indexOf('pv=task')>=0) preview='task'; }
+  if(preview){ state=fresh(); state.dbg.preview=preview; return render(); }
+  var saved=loadRun();
+  if(am){ dev.g=(am==='dtsa'?'x':'y'); lsSet(K_DEV,dev); state=fresh(); state.dbg.forced=true; }
+  else if(saved&&!saved.done){ state=saved; L=saved.lang||L; }
+  else { state=fresh(); }
+  if(ord){ state.order=ord.split(''); }
+  state.ch=ch||state.ch||'';
+  save(); flush();
+  window.addEventListener('online',flush);
+  window.addEventListener('pagehide',beaconFlush);
+  render();
+})();
+</script>
+</body>
+</html>
