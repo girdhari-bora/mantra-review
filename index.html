@@ -592,7 +592,8 @@ function endCommon(titleKey,bodyKey,row){
   var body=el('div',{class:'app'}, el('h2',{text:S(titleKey)}), el('p',{class:'mut',text:S(bodyKey)}),
     el('p',{class:'mut sm',text:S('end_debrief')}));
   var pending=(lsGet(K_OUT)||[]).length;
-  if(ENDPOINT&&pending>0) body.appendChild(el('p',{class:'xs mut',text:S('sendfail')}));
+  var sfNote=null;
+  if(ENDPOINT&&pending>0){ sfNote=el('p',{class:'xs mut',text:S('sendfail')}); body.appendChild(sfNote); }
   var sh=el('button',{class:'btn',style:'margin-top:18px',onclick:function(){
     var url=CANON_URL||location.href.split('?')[0];
     if(navigator.share){ try{ navigator.share({title:S('brand'),url:url}); return; }catch(e){} }
@@ -602,7 +603,12 @@ function endCommon(titleKey,bodyKey,row){
   body.appendChild(el('p',{class:'xs mut',style:'margin-top:12px'}, S('ref_pre'), el('b',{text:code}), S('ref_post')));
   /* manual-export fold appears only when genuinely needed: no sink configured,
      unsent rows stuck in the outbox, or a team debug session */
-  if(!ENDPOINT||pending>0||dbgOK) body.appendChild(researchFold(row||{}));
+  if(!ENDPOINT||pending>0||dbgOK){ var fold=researchFold(row||{}); body.appendChild(fold);
+    if(ENDPOINT&&!dbgOK){ var tries=0; var iv=setInterval(function(){      // in-flight sends usually land in seconds:
+      tries++; if((lsGet(K_OUT)||[]).length===0){ clearInterval(iv);       // once the outbox drains, tidy the screen
+        try{ fold.parentNode.removeChild(fold); }catch(e){}
+        if(sfNote){ try{ sfNote.parentNode.removeChild(sfNote); }catch(e){} } }
+      else if(tries>15){ clearInterval(iv); } },2000); } }
   mountBF(body,null);
 }
 function scrEnd(){ endCommon('end_t','end_b',lsGet(K_DONE)||{pid:state.pid}); }
