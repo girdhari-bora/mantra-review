@@ -112,7 +112,7 @@ var T={
   yes:{en:"Yes",hi:"हाँ"},no:{en:"No",hi:"नहीं"},
   e_out:{en:"Thank you. This study is for people who review programme data.",hi:"धन्यवाद। यह exercise उन लोगों के लिए है जो program का data देखते हैं।"},
   r_q:{en:"Your role",hi:"आपका role"},
-  roles:{en:["Block manager","District manager","Monitoring / MIS","Facility review","Supervisor","Other"],hi:["Block manager","District manager","Monitoring / MIS","Facility review","Supervisor","अन्य"]},
+  roles:{en:["Block manager","District manager","Division manager","State manager","Monitoring / MIS","Facility review","Supervisor","Other"],hi:["Block manager","District manager","Division manager","State manager","Monitoring / MIS","Facility review","Supervisor","अन्य"]},
   cont:{en:"Continue",hi:"आगे बढ़ें"},
   /* warm-up (data-reading practice, identical both arms, before the message) */
   wu_intro:{en:"First, a quick practice. A report looks like this — each line shows one thing, and the coloured word next to it (Good / Avg / Low) tells you how it is doing.",hi:"पहले एक छोटा practice। Report ऐसी दिखती है — हर line एक चीज़ बताती है, और उसके आगे रंग में लिखा शब्द (अच्छा / औसत / कम) बताता है कि हाल कैसा है।"},
@@ -185,18 +185,18 @@ var SCEN={
   A:{ district:"District A", div:"Division 2",
     flagged:{name:"Block 16",label:"Block 16 · District Hospital (DH) block · FRU",rows:[
       ["Deliveries","1,652",null],["% C-Section","36","high"],["% LBW","27","low"],
-      ["Stillbirths /1000","21","low"],["ANCS (<34 wk)","48%","low"],["Sex Ratio","920","low"]]},
+      ["Stillbirths /1000 live births","21","low"],["ANCS (<34 wk)","48%","low"],["Sex Ratio","920","low"]]},
     quiet:{name:"Block 13",label:"Block 13",rows:[
       ["Deliveries","264",null],["% C-Section","0","low"],["% LBW","11","avg"],
-      ["Stillbirths /1000","0","good"],["ANCS (<34 wk)","0% (0 of 4)","low"],["Sex Ratio","887","low"]]},
+      ["Stillbirths /1000 live births","0","good"],["ANCS (<34 wk)","0% (0 of 4)","low"],["Sex Ratio","887","low"]]},
     ref:"%CS 11 · %LBW 17 · Stillbirths 9/1000 · ANCS 48%" },
   B:{ district:"District B", div:"Division 4",
     flagged:{name:"Block 7",label:"Block 7 · District Hospital (DH) block · FRU",rows:[
       ["Deliveries","1,418",null],["% C-Section","33","high"],["% LBW","24","low"],
-      ["Stillbirths /1000","18","low"],["ANCS (<34 wk)","52%","low"],["Sex Ratio","915","low"]]},
+      ["Stillbirths /1000 live births","18","low"],["ANCS (<34 wk)","52%","low"],["Sex Ratio","915","low"]]},
     quiet:{name:"Block 4",label:"Block 4",rows:[
       ["Deliveries","301",null],["% C-Section","2","low"],["% LBW","10","avg"],
-      ["Stillbirths /1000","0","good"],["ANCS (<34 wk)","8% (1 of 12)","low"],["Sex Ratio","902","low"]]},
+      ["Stillbirths /1000 live births","0","good"],["ANCS (<34 wk)","8% (1 of 12)","low"],["Sex Ratio","902","low"]]},
     ref:"%CS 12 · %LBW 16 · Stillbirths 8/1000 · ANCS 51%" }
 };
 function bandClass(b){ return b==='good'?'g':(b==='avg'?'a':'r'); }
